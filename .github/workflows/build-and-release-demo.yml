@@ -34,24 +34,15 @@ jobs:
       - name: Build debug APK
         run: bash ./gradlew assembleDebug --no-daemon
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release and upload APK
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: demo-${{ github.run_number }}
-          release_name: Demo build ${{ github.run_number }}
+          tag: demo-${{ github.run_number }}
+          name: Demo build ${{ github.run_number }}
           body: Demo build from commit ${{ github.sha }}
           draft: false
           prerelease: true
-
-      - name: Upload debug APK to Release
-        uses: actions/upload-release-asset@v1
+          artifacts: app/build/outputs/apk/debug/app-debug.apk
+          artifactContentType: application/vnd.android.package-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/debug/app-debug.apk
-          asset_name: app-debug.apk
-          asset_content_type: application/vnd.android.package-archive
