@@ -13,6 +13,12 @@ Quick install (device or emulator)
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Open the app after installing it:
+
+```text
+raktavahini://open
+```
+
 2. On first run grant the app the runtime permission to read call logs if you want to view call logs.
 
 Notes
