@@ -51,4 +51,4 @@ jobs:
 
       - name: Ensure Pages settings (optional)
         run: |
-          echo "If the site doesn't appear, open Settings → Pages and set Source to 'gh-pages' branch / root.`"
+          echo "If the site doesn't appear, open Settings → Pages and set Source to 'gh-pages' branch / root."
