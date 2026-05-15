@@ -20,7 +20,13 @@ Open the app after installing it:
 raktavahini://open
 ```
 
-The friendly demo page above can be hosted with GitHub Pages from the `docs/` folder.
+The friendly demo page above is deployed by GitHub Pages from the `docs/` folder using GitHub Actions.
+
+To enable it in GitHub:
+1. Open the repository on GitHub.
+2. Go to `Settings` -> `Pages`.
+3. Set the source to `GitHub Actions`.
+4. Push to `main` and wait for the `Deploy GitHub Pages` workflow to finish.
 
 2. On first run grant the app the runtime permission to read call logs if you want to view call logs.
 
