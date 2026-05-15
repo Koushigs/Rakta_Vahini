@@ -29,7 +29,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: bash ./gradlew assembleDebug --no-daemon
 
       - name: Create or update "demo-latest" release
         id: demo_release
