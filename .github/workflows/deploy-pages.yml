@@ -11,6 +11,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Debug git state
+        run: |
+          git --version
+          echo "=== git status ==="
+          git status --porcelain --branch || true
+          echo "=== remotes ==="
+          git remote -v || true
+          echo "=== git config ==="
+          git config --list || true
 
       - name: Setup Node (optional for build steps)
         uses: actions/setup-node@v4
