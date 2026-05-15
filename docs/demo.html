@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rakta Vahini - Web Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #B3261E;
+            --primary-dark: #8C1D18;
+            --bg-light: #FDF8F8;
+            --surface: #FFFFFF;
+            --on-surface: #1C1B1F;
+            --on-surface-variant: #49454F;
+            --outline: #CAC4D0;
+            --shadow-1: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-2: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #E5E7EB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Mobile Device Frame for Desktop */
+        .device-frame {
+            width: 100%;
+            height: 100vh;
+            max-width: 400px;
+            max-height: 850px;
+            background-color: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 450px) {
+            .device-frame {
+                height: 85vh;
+                border-radius: 36px;
+                border: 12px solid #1f2937;
+            }
+        }
+
+        /* View Containers */
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-light);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+            transform: translateX(100%);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .view.active {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 20;
+        }
+
+        .view.previous {
+            transform: translateX(-30%);
+            opacity: 0;
+        }
+
+        /* --- Login Screen Styles --- */
+        #login-view {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 32px 24px;
+        }
+
+        .login-header {
+            margin-top: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-2);
+        }
+
+        .login-logo .material-icons {
+            font-size: 48px;
+            color: var(--primary);
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            color: var(--on-surface);
+            box-shadow: var(--shadow-2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--outline);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 100px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(179, 38, 30, 0.3);
+        }
+
+        /* --- Main App Styles --- */
+        .app-bar {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-1);
+            z-index: 30;
+            padding-top: max(16px, env(safe-area-inset-top));
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .app-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 100px; /* Space for bottom nav */
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .quote-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow-1);
+            margin-bottom: 20px;
+        }
+
+        .search-card h3 {
+            margin-bottom: 12px;
+            color: var(--on-surface);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input-wrapper .material-icons {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--on-surface-variant);
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 1px solid var(--outline);
+            border-radius: 100px;
+            font-size: 15px;
+            outline: none;
+            background: var(--bg-light);
+        }
+
+        .search-input-wrapper input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .chip-group {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .chip-group::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            padding: 8px 16px;
+            border: 1px solid var(--outline);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip.active {
+            background-color: rgba(179, 38, 30, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .action-tile {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: var(--shadow-1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-tile:active {
+            transform: scale(0.95);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(179, 38, 30, 0.1);
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donor-list h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .donor-card {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: var(--shadow-1);
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .donor-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .blood-badge {
+            width: 48px;
+            height: 48px;
+            background: rgba(179, 38, 30, 0.1);
+            color: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .donor-info h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .donor-info p {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+
+        .donor-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--outline);
+        }
+
+        .donor-actions button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 24px 0; /* Extra padding for modern phones */
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 30;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--on-surface-variant);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item .icon-wrapper {
+            width: 64px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item.active .icon-wrapper {
+            background-color: rgba(179, 38, 30, 0.1);
+        }
+        
+        /* Loading Overlay */
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .loader-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(179, 38, 30, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="device-frame">
+        
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="view active">
+            <div class="login-header">
+                <div class="login-logo">
+                    <span class="material-icons">bloodtype</span>
+                </div>
+                <h1 class="login-title">Rakta-Vahini</h1>
+                <p class="login-subtitle">Mission-Critical Blood Donation</p>
+            </div>
+            
+            <div class="login-card">
+                <div class="input-group">
+                    <label class="input-label">Phone Number</label>
+                    <input type="tel" class="input-field" placeholder="Enter your mobile number" value="9876543210">
+                </div>
+                <div class="input-group" id="otp-group" style="display: none; animation: fadeIn 0.3s forwards;">
+                    <label class="input-label">OTP Verification</label>
+                    <input type="number" class="input-field" placeholder="Enter 6-digit OTP" value="123456">
+                </div>
+                
+                <button class="btn btn-primary" id="login-btn">
+                    Send OTP
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN APP VIEW -->
+        <div id="main-view" class="view">
+            <div class="app-bar">
+                <div class="app-title">Rakta-Vahini</div>
+                <div class="app-actions">
+                    <span class="material-icons">notifications</span>
+                    <span class="material-icons" id="profile-btn">account_circle</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="hero-card">
+                    <div class="quote-text">"Donating blood is giving the gift of life."</div>
+                    <button class="btn" style="background: white; color: var(--primary); padding: 10px 20px; display: inline-flex; width: auto; font-size: 14px;">
+                        <span class="material-icons" style="font-size: 18px; margin-right: 6px;">share</span> Share Quote
+                    </button>
+                </div>
+                
+                <div class="search-card">
+                    <h3>Search donor directory</h3>
+                    <div class="search-input-wrapper">
+                        <span class="material-icons">search</span>
+                        <input type="text" placeholder="Blood group, city, or specialty">
+                    </div>
+                    <div class="chip-group">
+                        <div class="chip active">10 km</div>
+                        <div class="chip">20 km</div>
+                        <div class="chip">Eligible only</div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 16px; padding: 12px;" onclick="simulateSearch()">Search</button>
+                </div>
+                
+                <div class="action-grid">
+                    <div class="action-tile">
+                        <div class="action-icon"><span class="material-icons">bloodtype</span></div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">Log donation</div>
+                            <div style="font-size: 12px; color: var(--on-surface-variant); margin-top: 4px;">Starts thank-you flow</div>
+                        </div>
+                    </div>
+                    <div class="action-tile">
+                        <div class="action-icon"><span class="material-icons">location_on</span></div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">Use location</div>
+                            <div style="font-size: 12px; color: var(--on-surface-variant); margin-top: 4px;">Radius matched</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="donor-list">
+                    <h3>Nearby eligible donors</h3>
+                    
+                    <div class="donor-card" id="demo-donor-1">
+                        <div class="donor-header">
+                            <div class="blood-badge">O+</div>
+                            <div class="donor-info">
+                                <h4>Ramesh Iyer</h4>
+                                <p>Raipur · 4.2 km away</p>
+                            </div>
+                        </div>
+                        <div class="donor-actions">
+                            <div class="chip" style="font-size: 12px; padding: 4px 10px; border-color: transparent; background: #e6f4ea; color: #137333;">Eligible now</div>
+                            <button onclick="callDonor()"><span class="material-icons" style="font-size: 18px;">call</span> Call</button>
+                        </div>
+                    </div>
+
+                    <div class="donor-card">
+                        <div class="donor-header">
+                            <div class="blood-badge">A-</div>
+                            <div class="donor-info">
+                                <h4>Priya Sharma</h4>
+                                <p>Bilaspur · 8.5 km away</p>
+                            </div>
+                        </div>
+                        <div class="donor-actions">
+                            <div class="chip" style="font-size: 12px; padding: 4px 10px; border-color: transparent; background: #fef7e0; color: #b06000;">Donation in 10 days</div>
+                            <button onclick="callDonor()"><span class="material-icons" style="font-size: 18px;">call</span> Call</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <div class="icon-wrapper"><span class="material-icons">home</span></div>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item">
+                    <div class="icon-wrapper"><span class="material-icons">search</span></div>
+                    <span>Search</span>
+                </div>
+                <div class="nav-item">
+                    <div class="icon-wrapper"><span class="material-icons">bloodtype</span></div>
+                    <span>Donate</span>
+                </div>
+                <div class="nav-item">
+                    <div class="icon-wrapper"><span class="material-icons">directions_walk</span></div>
+                    <span>History</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loader-overlay" id="loader">
+            <div class="spinner"></div>
+            <p style="margin-top: 16px; font-weight: 500; color: var(--primary);" id="loader-text">Loading...</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple Interaction Logic for Web Demo
+        const loginBtn = document.getElementById('login-btn');
+        const otpGroup = document.getElementById('otp-group');
+        const loginView = document.getElementById('login-view');
+        const mainView = document.getElementById('main-view');
+        const loader = document.getElementById('loader');
+        const loaderText = document.getElementById('loader-text');
+        
+        let step = 0;
+
+        loginBtn.addEventListener('click', () => {
+            if (step === 0) {
+                // Send OTP
+                loginBtn.innerHTML = '<span class="material-icons">refresh</span> Sending...';
+                loginBtn.style.opacity = '0.8';
+                
+                setTimeout(() => {
+                    otpGroup.style.display = 'block';
+                    loginBtn.innerHTML = 'Verify & Login';
+                    loginBtn.style.opacity = '1';
+                    step = 1;
+                }, 800);
+            } else {
+                // Login
+                loginBtn.innerHTML = '<span class="material-icons">check_circle</span> Verified';
+                setTimeout(() => {
+                    loginView.classList.remove('active');
+                    loginView.classList.add('previous');
+                    mainView.classList.add('active');
+                }, 500);
+            }
+        });
+
+        function showLoader(text, duration) {
+            loaderText.innerText = text;
+            loader.classList.add('show');
+            setTimeout(() => {
+                loader.classList.remove('show');
+            }, duration);
+        }
+
+        function simulateSearch() {
+            showLoader("Searching directory...", 1200);
+            setTimeout(() => {
+                const donorList = document.querySelector('.donor-list');
+                const oldContent = donorList.innerHTML;
+                donorList.innerHTML = `<h3>Precision search results</h3>
+                    <div class="donor-card" style="animation: fadeIn 0.4s">
+                        <div class="donor-header">
+                            <div class="blood-badge" style="background:var(--primary); color:white;">B+</div>
+                            <div class="donor-info">
+                                <h4>Karan Singh</h4>
+                                <p>Durg · 2.1 km away</p>
+                            </div>
+                        </div>
+                        <div class="donor-actions">
+                            <div class="chip" style="font-size: 12px; padding: 4px 10px; border-color: transparent; background: #e6f4ea; color: #137333;">Eligible now</div>
+                            <button onclick="callDonor()"><span class="material-icons" style="font-size: 18px;">call</span> Call</button>
+                        </div>
+                    </div>`;
+            }, 1200);
+        }
+
+        function callDonor() {
+            alert("This is a web demo! In the actual Android app, this launches the dialer securely logging the interaction for donor protection.");
+        }
+
+        document.getElementById('profile-btn').addEventListener('click', () => {
+            if (confirm("Log out of web demo?")) {
+                mainView.classList.remove('active');
+                loginView.classList.remove('previous');
+                loginView.classList.add('active');
+                step = 0;
+                otpGroup.style.display = 'none';
+                loginBtn.innerHTML = 'Send OTP';
+            }
+        });
+
+        // Add simple animation styles dynamically
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
