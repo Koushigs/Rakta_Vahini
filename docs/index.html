@@ -6,17 +6,51 @@
   <meta name="theme-color" content="#9f2a2a" />
   <title>Rakta Vahini Demo</title>
   <script>
-    const appLaunchUrl = "intent://open#Intent;scheme=raktavahini;package=com.raktavahini.app;S.browser_fallback_url=https%3A%2F%2Fgithub.com%2FKoushigs%2FRakta_Vahini%2Freleases%2Fdownload%2Fdemo-latest%2Fdemo-latest.apk;end";
+    // Intent URL will open the app on Chrome/Android (falls back to APK URL)
+    const apkFallback = "https://github.com/Koushigs/Rakta_Vahini/releases/download/demo-latest/demo-latest.apk";
+    const intentUrl = "intent://open#Intent;scheme=raktavahini;package=com.raktavahini.app;S.browser_fallback_url=" + encodeURIComponent(apkFallback) + ";end";
+
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent || '');
+    }
+
+    // Try to open the app on Android. If it doesn't open within timeout, fall back to APK.
+    function tryOpenApp() {
+      if (!isAndroid()) return false;
+      // For Chrome on Android, intent:// works best
+      const now = Date.now();
+      // attempt to open via intent
+      window.location.href = intentUrl;
+
+      // Fallback: after 1.5s, redirect to APK download if app didn't open
+      setTimeout(() => {
+        // If we're still on the page (i.e. app didn't open), go to APK
+        if (Date.now() - now < 2000) {
+          window.location.href = apkFallback;
+        }
+      }, 1500);
+      return true;
+    }
 
     window.addEventListener("load", () => {
       const openButton = document.getElementById("open-app-link");
       if (openButton) {
-        openButton.href = appLaunchUrl;
+        // set appropriate link for Android devices, otherwise keep APK fallback
+        if (isAndroid()) {
+          openButton.href = intentUrl;
+          openButton.addEventListener('click', (e) => {
+            // attempt to open app, but allow fallback behavior
+            tryOpenApp();
+          });
+        } else {
+          openButton.href = 'raktavahini://open';
+        }
       }
 
-      const autoOpen = new URLSearchParams(window.location.search).has("open");
-      if (autoOpen) {
-        window.location.replace(appLaunchUrl);
+      // If URL includes ?open and we're on Android, try opening automatically
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('open') && isAndroid()) {
+        tryOpenApp();
       }
     });
   </script>
