@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#9f2a2a" />
   <title>Rakta Vahini Demo</title>
+  <script>
+    const appLaunchUrl = "intent://open#Intent;scheme=raktavahini;package=com.raktavahini.app;S.browser_fallback_url=https%3A%2F%2Fgithub.com%2FKoushigs%2FRakta_Vahini%2Freleases%2Fdownload%2Fdemo-latest%2Fdemo-latest.apk;end";
+
+    window.addEventListener("load", () => {
+      const openButton = document.getElementById("open-app-link");
+      if (openButton) {
+        openButton.href = appLaunchUrl;
+      }
+
+      const autoOpen = new URLSearchParams(window.location.search).has("open");
+      if (autoOpen) {
+        window.location.replace(appLaunchUrl);
+      }
+    });
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -154,7 +169,7 @@
     </p>
 
     <div class="actions">
-      <a class="button primary" href="raktavahini://open">Open App</a>
+      <a class="button primary" id="open-app-link" href="raktavahini://open">Open App</a>
       <a class="button secondary" href="https://github.com/Koushigs/Rakta_Vahini/releases/download/demo-latest/demo-latest.apk">Download APK</a>
     </div>
 
@@ -164,7 +179,7 @@
     </div>
 
     <p class="small">
-      GitHub Pages can host this page, but Android can only open the installed app when the device supports the custom link scheme.
+      If the app is installed, the page will try to open it using Android's intent link. If it is not installed, the browser falls back to the APK download.
     </p>
   </main>
 </body>
