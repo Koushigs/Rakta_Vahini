@@ -1,0 +1,15 @@
+{
+  "name": "Rakta Vahini Demo",
+  "short_name": "RaktaVahini",
+  "start_url": "/Rakta_Vahini/",
+  "display": "standalone",
+  "background_color": "#fff9f4",
+  "theme_color": "#b3261e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

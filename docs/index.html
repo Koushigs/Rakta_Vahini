@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#9f2a2a" />
+    <link rel="manifest" href="/Rakta_Vahini/manifest.webmanifest">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" href="/Rakta_Vahini/icon.svg">
   <title>Rakta Vahini Demo</title>
   <script>
     // Intent URL will open the app on Chrome/Android (falls back to APK URL)
@@ -216,5 +219,38 @@
       If the app is installed, the page will try to open it using Android's intent link. If it is not installed, the browser falls back to the APK download.
     </p>
   </main>
+  <div id="install-hint" style="display:none;margin-top:12px;">
+    <button id="install-btn" class="button secondary">Install Web App</button>
+  </div>
 </body>
+  <script>
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Rakta_Vahini/sw.js').catch((e) => {
+        console.warn('SW registration failed', e);
+      });
+    }
+
+    // Handle beforeinstallprompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-hint').style.display = 'block';
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) {
+          alert('Install not available');
+          return;
+        }
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        document.getElementById('install-hint').style.display = 'none';
+      });
+    }
+  </script>
 </html>
