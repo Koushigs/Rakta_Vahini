@@ -3,6 +3,7 @@
 This repository contains the Rakta Vahini Android app. A permanent demo APK is published to the `demo-latest` prerelease so you can share a single download link.
 
 - Permanent demo APK: https://github.com/Koushigs/Rakta_Vahini/releases/download/demo-latest/demo-latest.apk
+- Friendly demo page: https://Koushigs.github.io/Rakta_Vahini/
 
 Quick install (device or emulator)
 
@@ -18,6 +19,8 @@ Open the app after installing it:
 ```text
 raktavahini://open
 ```
+
+The friendly demo page above can be hosted with GitHub Pages from the `docs/` folder.
 
 2. On first run grant the app the runtime permission to read call logs if you want to view call logs.
 
