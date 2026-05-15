@@ -44,12 +44,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload debug APK to demo-latest release
+      - name: Remove existing demo-latest.apk asset (if any)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          TAG="demo-latest"
+          ASSET_NAME="demo-latest.apk"
+
+          echo "Checking for existing asset named $ASSET_NAME on release $TAG..."
+          release_json=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "$API/releases/tags/$TAG")
+          asset_ids=$(echo "$release_json" | jq -r '.assets[] | select(.name=="'"$ASSET_NAME"'" ) | .id' || true)
+          if [ -n "$asset_ids" ]; then
+            for id in $asset_ids; do
+              echo "Deleting asset id $id"
+              curl -s -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" "$API/releases/assets/$id"
+            done
+          else
+            echo "No existing asset named $ASSET_NAME found."
+          fi
+
+      - name: Upload debug APK to demo-latest release (stable name)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.demo_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/debug/app-debug.apk
-          asset_name: app-debug.apk
+          asset_name: demo-latest.apk
           asset_content_type: application/vnd.android.package-archive
