@@ -1,14 +1,9 @@
-name: Deploy docs to GitHub Pages
+name: Deploy docs to GitHub Pages (gh-pages branch)
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
   deploy:
@@ -17,16 +12,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v3
+      - name: Setup Node (optional for build steps)
+        uses: actions/setup-node@v4
         with:
-          # ensure the repository is enabled for Pages if not already
-          enablement: true
+          node-version: '18'
 
-      - name: Upload `docs/` artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Publish `docs/` to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: docs
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+      - name: Ensure Pages settings (optional)
+        run: |
+          echo "If the site doesn't appear, open Settings → Pages and set Source to 'gh-pages' branch / root.`"
